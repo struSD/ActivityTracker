@@ -13,7 +13,7 @@ An activity tracker lets you keep track of your daily activities and see statist
 - id
 - name
 
-### class Present
+### class Activity
 
 - activity_id
 - activity_type
