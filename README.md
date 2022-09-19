@@ -6,14 +6,14 @@ An activity tracker lets you keep track of your daily activities and see statist
 3. As a user, I want to take part and look through in leader board based on available filters
 4. As a user, I want to follow the daily goals for more than 2 weeks
 
-# Models
+## Models
 
-## class User
+### class User
 
 - id
 - name
 
-## class Present
+### class Present
 
 - activity_id
 - activity_type
