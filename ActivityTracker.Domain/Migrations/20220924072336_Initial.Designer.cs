@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ActivityTracker.Domain.Migrations
 {
     [DbContext(typeof(ActivityTrackerDbContext))]
-    [Migration("20220919200140_Initial")]
+    [Migration("20220924072336_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
