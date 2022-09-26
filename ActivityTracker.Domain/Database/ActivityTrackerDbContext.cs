@@ -15,9 +15,9 @@ public class ActivityTrackerDbContext : DbContext
     public ActivityTrackerDbContext(DbContextOptions<ActivityTrackerDbContext> options) : base(options)
     {
     }
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        optionsBuilder.UseNpgsql("Host=localhost;Port=5432;Database=ActivityTracker;Username=postgres;Password=261095;");
-    }
+    // protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    // {
+    //     optionsBuilder.UseNpgsql();
+    // }
 }
 
