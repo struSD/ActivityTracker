@@ -3,14 +3,14 @@ using System.ComponentModel.DataAnnotations;
 namespace ActivityTracker.Contract.Http;
 
 
-public class CreateActivityTrackerRequest
+public class CreateUserRequest
 {
     [Required]
     [MaxLength(255)]
     public string Name { get; set; }
 }
 
-public class CreateActivityTrackerResponce
+public class CreateUserResponce
 {
     public int Id { get; set; }
 }

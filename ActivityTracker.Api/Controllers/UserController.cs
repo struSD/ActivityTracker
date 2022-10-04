@@ -10,26 +10,26 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ActivityTracker.Api.Controller;
 
-[Route("api/activityTracker")]
-public class ActivityTrackerController : ControllerBase
+[Route("api/user")]
+public class UserController : ControllerBase
 {
     private readonly IMediator _mediator;
-    public ActivityTrackerController(IMediator mediator)
+    public UserController(IMediator mediator)
     {
         _mediator = mediator;
     }
     [HttpPut]
-    public async Task<IActionResult> CreateActivityTracker([FromBody] CreateActivityTrackerRequest request,
+    public async Task<IActionResult> CreateUser([FromBody] CreateUserRequest request,
         CancellationToken cancellationToken)
     {
-        var command = new CreateActivityTrackerCommand
+        var command = new CreateUserCommand
         {
             Name = request.Name
         };
         var result = await _mediator.Send(command, cancellationToken);
-        var responce = new CreateActivityTrackerResponce
+        var responce = new CreateUserResponce
         {
-            Id = result.ActivityTrackerId
+            Id = result.UserId
         };
         return Created("http://todo.com", responce);
     }

@@ -16,34 +16,34 @@ namespace ActivityTracker.UnitTests.Commands;
 
 public class CreateActivityTrackerCommandHandlerTests
 {
-    private readonly ActivityTrackerDbContext _dbContext;
-    public readonly IRequestHandler<CreateActivityTrackerCommand, CreateActivityTrackerCommandResult> _handler;
+    private readonly UserDbContext _dbContext;
+    public readonly IRequestHandler<CreateUserCommand, CreateUserCommandResult> _handler;
     public CreateActivityTrackerCommandHandlerTests()
     {
         var tempFile = Path.GetTempFileName();
 
-        var options = new DbContextOptionsBuilder<ActivityTrackerDbContext>()
+        var options = new DbContextOptionsBuilder<UserDbContext>()
             .UseSqlite($"Data Source={tempFile};")
             .Options;
 
-        _dbContext = new ActivityTrackerDbContext(options);
+        _dbContext = new UserDbContext(options);
         _dbContext.Database.Migrate();
-        _handler = new CreateActivityTrackerCommandHandler(_dbContext); 
+        _handler = new CreateUserCommandHandler(_dbContext); 
     }
 
     [Fact]
     public async Task HandleShouldCreateEmptyActivityTracker()
     {
         // Arrange
-        var activityTrackerName = Guid.NewGuid().ToString();
-        var command = new CreateActivityTrackerCommand
+        var userName = Guid.NewGuid().ToString();
+        var command = new CreateUserCommand
         {
-            Name = activityTrackerName
+            Name = userName
         };
         // Act
         var result = await _handler.Handle(command, CancellationToken.None);
         // Assert
         result.ShouldNotBeNull();
-        result.ActivityTrackerId.ShouldBeGreaterThan(0);
+        result.UserId.ShouldBeGreaterThan(0);
     }
 }

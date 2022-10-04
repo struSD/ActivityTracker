@@ -21,8 +21,8 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.Configure<AppConfiguration>(builder.Configuration);
 
-builder.Services.AddMediatR(typeof(CreateActivityTrackerCommand));
-builder.Services.AddDbContext<ActivityTrackerDbContext> ((sp, optionts) => 
+builder.Services.AddMediatR(typeof(CreateUserCommand));
+builder.Services.AddDbContext<UserDbContext> ((sp, optionts) => 
 {
     var configuration = sp.GetRequiredService<IOptionsMonitor<AppConfiguration>>();
     optionts.UseNpgsql(configuration.CurrentValue.ConnectionString);
