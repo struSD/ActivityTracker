@@ -7,10 +7,10 @@ public class CreateUserRequest
 {
     [Required]
     [MaxLength(255)]
-    public string Name { get; set; }
+    public string Name { get; init; }
 }
 
 public class CreateUserResponce
 {
-    public int Id { get; set; }
+    public int Id { get; init; }
 }

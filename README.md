@@ -6,8 +6,8 @@ An activity tracker lets you keep track of your daily activities and see statist
 3. As a user, I want to follow the daily goals for more than 2 weeks all 
 
 ## HTTP API
-- PUT /api/user -> Returns 201 with activityTracker ID
-- PUT /api/userActivity BODY=activity details + user id -> Returns 201 with userActivity ID / 404 Not Found if no such user
+- PUT /api/user -> Returns 201 with userID
+- PUT /api/userActivity BODY=activity details + userId -> Returns 201 with userActivity ID / 404 Not Found if no such user
 - GET /api/user/{activityId} -> Returns 200 OK / 404 Not Found if no such user
 
 

@@ -1,3 +1,5 @@
+using System;
+using System.ComponentModel.DataAnnotations;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -7,6 +9,8 @@ using ActivityTracker.Domain.Commands;
 using MediatR;
 
 using Microsoft.AspNetCore.Mvc;
+
+using Npgsql;
 
 namespace ActivityTracker.Api.Controller;
 
@@ -22,16 +26,42 @@ public class UserController : ControllerBase
     public async Task<IActionResult> CreateUser([FromBody] CreateUserRequest request,
         CancellationToken cancellationToken)
     {
-        var command = new CreateUserCommand
+        try
         {
-            Name = request.Name
-        };
-        var result = await _mediator.Send(command, cancellationToken);
-        var responce = new CreateUserResponce
+            var command = new CreateUserCommand
+            {
+                Name = request.Name
+            };
+            var result = await _mediator.Send(command, cancellationToken);
+            var responce = new CreateUserResponce
+            {
+                Id = result.UserId
+            };
+            return Created("http://todo.com", responce);
+        }
+        catch (InvalidOperationException ioe) when (ioe.InnerException is NpgsqlException)
         {
-            Id = result.UserId
-        };
-        return Created("http://todo.com", responce);
+            var responce = new ErrorResponse
+            {
+                Code = ErrorCode.DbFailureError,
+                Message = "DB fail"
+            }; 
+            return ToActionResult(responce);
+        }
+        catch (Exception)
+        {
+            var responce = new ErrorResponse
+            {
+                Code = ErrorCode.InternalServerError,
+                Message = "Unhandled error"
+            };
+            return ToActionResult(responce);
+        }
+    }
+
+    private IActionResult ToActionResult(ErrorResponse errorResponse)
+    {
+        return StatusCode((int)errorResponse.Code / 100, errorResponse);
     }
 
 }
