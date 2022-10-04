@@ -1,6 +1,14 @@
+using ActivityTracker.Api.Configuration;
+using ActivityTracker.Domain.Commands;
+using ActivityTracker.Domain.Database;
+
+using MediatR;
+
 using Microsoft.AspNetCore.Builder;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,6 +18,18 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.Configure<AppConfiguration>(builder.Configuration);
+
+builder.Services.AddMediatR(typeof(CreateActivityTrackerCommand));
+builder.Services.AddDbContext<ActivityTrackerDbContext> ((sp, optionts) => 
+{
+    var configuration = sp.GetRequiredService<IOptionsMonitor<AppConfiguration>>();
+    optionts.UseNpgsql(configuration.CurrentValue.ConnectionString);
+}); 
+
+
+
 
 var app = builder.Build();
 
@@ -21,7 +41,6 @@ if (app.Environment.IsDevelopment())
 }
 
 
-app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
