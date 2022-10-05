@@ -1,5 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 
+using ActivityTracker.Contract.Database;
+
 namespace ActivityTracker.Contract.Http;
 
 

@@ -1,10 +1,12 @@
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
 using ActivityTracker.Contract.Http;
 using ActivityTracker.Domain.Commands;
+using ActivityTracker.Domain.Queries;
 
 using MediatR;
 
@@ -15,18 +17,47 @@ using Npgsql;
 namespace ActivityTracker.Api.Controller;
 
 [Route("api/user")]
-public class UserController : ControllerBase
+public class UserController : BaseController
 {
     private readonly IMediator _mediator;
     public UserController(IMediator mediator)
     {
         _mediator = mediator;
     }
+
+    [HttpGet("{userId}")]
+    public Task<IActionResult> GetUser([FromRoute] int userId,
+            CancellationToken cancellationToken) =>
+            SafeExecute(async () =>
+        {
+            var query = new UserQuery
+            {
+                UserId = userId
+            };
+            var result = await _mediator.Send(query, cancellationToken);
+            var responce = new UserResponce
+            {
+                User = new Contract.Http.User
+                {
+                    Id = result.User.Id,
+                    Name = result.User.Name,
+                    ActivityUsers = result.User.ActivityUsers.Select(a => new ActivityUser
+                    {
+                        ActivityId = a.ActivityId,
+                        ActivityType = a.ActivityType,
+                        ActivityDateTime = a.ActivityDateTime,
+                        ActivityDuration = a.ActivityDuration
+                    }).ToList()
+                }
+            };
+            return Ok(responce);
+        }, cancellationToken);
+
     [HttpPut]
-    public async Task<IActionResult> CreateUser([FromBody] CreateUserRequest request,
-        CancellationToken cancellationToken)
+    public Task<IActionResult> CreateUser([FromBody] CreateUserRequest request,
+            CancellationToken cancellationToken)
     {
-        try
+        return SafeExecute(async () =>
         {
             var command = new CreateUserCommand
             {
@@ -38,30 +69,6 @@ public class UserController : ControllerBase
                 Id = result.UserId
             };
             return Created("http://todo.com", responce);
-        }
-        catch (InvalidOperationException ioe) when (ioe.InnerException is NpgsqlException)
-        {
-            var responce = new ErrorResponse
-            {
-                Code = ErrorCode.DbFailureError,
-                Message = "DB fail"
-            }; 
-            return ToActionResult(responce);
-        }
-        catch (Exception)
-        {
-            var responce = new ErrorResponse
-            {
-                Code = ErrorCode.InternalServerError,
-                Message = "Unhandled error"
-            };
-            return ToActionResult(responce);
-        }
+        }, cancellationToken);
     }
-
-    private IActionResult ToActionResult(ErrorResponse errorResponse)
-    {
-        return StatusCode((int)errorResponse.Code / 100, errorResponse);
-    }
-
 }
