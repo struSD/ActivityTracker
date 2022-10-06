@@ -3,8 +3,10 @@ using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+
 using ActivityTracker.Domain.Commands;
 using ActivityTracker.Domain.Database;
+using ActivityTracker.UnitTests.Helpers;
 
 using MediatR;
 
@@ -14,21 +16,14 @@ using Shouldly;
 
 namespace ActivityTracker.UnitTests.Commands;
 
-public class CreateActivityTrackerCommandHandlerTests
+public class CreateActivityTrackerCommandHandlerTests : IDisposable
 {
     private readonly UserDbContext _dbContext;
     public readonly IRequestHandler<CreateUserCommand, CreateUserCommandResult> _handler;
     public CreateActivityTrackerCommandHandlerTests()
     {
-        var tempFile = Path.GetTempFileName();
-
-        var options = new DbContextOptionsBuilder<UserDbContext>()
-            .UseSqlite($"Data Source={tempFile};")
-            .Options;
-
-        _dbContext = new UserDbContext(options);
-        _dbContext.Database.Migrate();
-        _handler = new CreateUserCommandHandler(_dbContext); 
+        _dbContext = DbContextHelper.CreateTestDb();
+        _handler = new CreateUserCommandHandler(_dbContext);
     }
 
     [Fact]
@@ -45,5 +40,11 @@ public class CreateActivityTrackerCommandHandlerTests
         // Assert
         result.ShouldNotBeNull();
         result.UserId.ShouldBeGreaterThan(0);
+    }
+
+    public void Dispose()
+    {
+        _dbContext.Database.EnsureDeleted();
+        _dbContext.Dispose();
     }
 }

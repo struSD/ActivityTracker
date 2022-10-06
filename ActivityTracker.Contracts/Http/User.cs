@@ -11,5 +11,5 @@ public class User
     [Required]
     [MaxLength(255)]
     public string Name { get; init; }
-    public ICollection<ActivityUser> ActivityUsers { get; set; }
+    public ICollection<ActivityUser> ActivityUser { get; set; }
 }

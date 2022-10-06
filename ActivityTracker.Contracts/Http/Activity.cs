@@ -2,6 +2,8 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
+using ActivityTracker.Contract.Database;
+
 namespace ActivityTracker.Contract.Http;
 
 public class ActivityUser
@@ -10,7 +12,7 @@ public class ActivityUser
 
     [Required]
     [MaxLength(255)]
-    public string ActivityType { get; init; }
+    public ActivityType ActivityType { get; init; }
     [Required]
     public DateTime? ActivityDateTime { get; init; }
     [Required]

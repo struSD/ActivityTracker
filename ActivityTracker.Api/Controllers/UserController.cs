@@ -41,7 +41,7 @@ public class UserController : BaseController
                 {
                     Id = result.User.Id,
                     Name = result.User.Name,
-                    ActivityUsers = result.User.ActivityUsers.Select(a => new ActivityUser
+                    ActivityUser = result.User.ActivityUsers.Select(a => new ActivityUser
                     {
                         ActivityId = a.ActivityId,
                         ActivityType = a.ActivityType,
