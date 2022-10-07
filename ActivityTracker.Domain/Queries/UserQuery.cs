@@ -37,7 +37,7 @@ internal class UserQueryHandler : IRequestHandler<UserQuery, UserQueryResult>
         var user = await _dbContext.Users.Include(u => u.ActivityUsers).SingleOrDefaultAsync(u => u.Id == request.UserId, cancellationToken);
         if (user == null)
         {
-            throw new UserException(ErrorCode.UserNotFound, $"User{request.UserId} not found");
+            throw new ActivityTrackerException(ErrorCode.UserNotFound, $"User{request.UserId} not found");
         }
         return new UserQueryResult
         {

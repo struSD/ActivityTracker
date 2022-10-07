@@ -12,7 +12,7 @@ public class ActivityUser
 
     [Required]
     [MaxLength(255)]
-    public ActivityType ActivityType { get; init; }
+    public string ActivityType { get; init; }
     [Required]
     public DateTime? ActivityDateTime { get; init; }
     [Required]

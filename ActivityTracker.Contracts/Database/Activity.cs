@@ -4,22 +4,6 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ActivityTracker.Contract.Database;
 
-public enum ActivityType
-{
-    Golf = 1,
-    Biking = 2,
-    Hiking = 3,
-    Kayaking = 4,
-    Soccer = 5,
-    Running = 6,
-    Skiing = 7,
-    Swimming = 8,
-    Walking = 9,
-    WeightLifting = 10,
-    Basketball = 11,
-    CrossFit = 12
-}
-
 [Table("tbl_activity", Schema = "public")]
 public class ActivityUser
 {
@@ -31,7 +15,7 @@ public class ActivityUser
     [Required]
     [MaxLength(255)]
     [Column("activity_type")]
-    public ActivityType ActivityType { get; set; }
+    public string ActivityType { get; set; }
 
     [Required]
     [Column("activity_dateTime")]

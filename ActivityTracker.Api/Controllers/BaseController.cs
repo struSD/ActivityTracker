@@ -19,12 +19,12 @@ public class BaseController : ControllerBase
         {
             return await action();
         }
-        catch (UserException ue)
+        catch (ActivityTrackerException ate)
         {
             var responce = new ErrorResponse
             {
-                Code = ue.ErrorCode,
-                Message = ue.Message
+                Code = ate.ErrorCode,
+                Message = ate.Message
             };
             return ToActionResult(responce);
         }

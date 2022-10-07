@@ -16,18 +16,18 @@ using Shouldly;
 
 namespace ActivityTracker.UnitTests.Commands;
 
-public class CreateActivityTrackerCommandHandlerTests : IDisposable
+public class CreateUserCommandHandlerTests : IDisposable
 {
     private readonly UserDbContext _dbContext;
     public readonly IRequestHandler<CreateUserCommand, CreateUserCommandResult> _handler;
-    public CreateActivityTrackerCommandHandlerTests()
+    public CreateUserCommandHandlerTests()
     {
         _dbContext = DbContextHelper.CreateTestDb();
         _handler = new CreateUserCommandHandler(_dbContext);
     }
 
     [Fact]
-    public async Task HandleShouldCreateEmptyActivityTracker()
+    public async Task HandleShouldCreateEmptyUser()
     {
         // Arrange
         var userName = Guid.NewGuid().ToString();

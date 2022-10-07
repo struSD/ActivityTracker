@@ -67,7 +67,7 @@ public class UserController : BaseController
                     Message = "invalid request"
                 });
             }
-            
+
             var command = new CreateUserCommand
             {
                 Name = request.Name

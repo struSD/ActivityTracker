@@ -28,6 +28,7 @@ public class UserQueryHandlerTests
     [Fact]
     public async Task HandlerShouldReturnUser()
     {
+        
         //Arrenge
         var user = new User
         {
@@ -36,15 +37,15 @@ public class UserQueryHandlerTests
             {
                 new ActivityUser
                 {
-                    ActivityType = ActivityType.Golf,
+                    ActivityType = "golf",
                     ActivityDateTime = new DateTime(2000, 01, 01),
-                    ActivityDuration = 900
+                    ActivityDuration = new Random().Next(1000, 2500)
                 },
                 new ActivityUser
                 {
-                    ActivityType = ActivityType.Hiking,
+                    ActivityType = "run",
                     ActivityDateTime = new DateTime(2010, 10, 10),
-                    ActivityDuration = 500
+                    ActivityDuration = new Random().Next(1000, 2500)
                 }
             }
         };
