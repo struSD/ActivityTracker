@@ -17,7 +17,7 @@ public class CreateUserCommandResult
 {
     public int UserId { get; set; }
 }
-public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, CreateUserCommandResult>
+internal class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, CreateUserCommandResult>
 {
     private readonly UserDbContext _dbContext;
 

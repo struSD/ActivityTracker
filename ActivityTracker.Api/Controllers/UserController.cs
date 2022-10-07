@@ -59,6 +59,15 @@ public class UserController : BaseController
     {
         return SafeExecute(async () =>
         {
+            if (!ModelState.IsValid)
+            {
+                return ToActionResult(new ErrorResponse
+                {
+                    Code = ErrorCode.BadRequest,
+                    Message = "invalid request"
+                });
+            }
+            
             var command = new CreateUserCommand
             {
                 Name = request.Name

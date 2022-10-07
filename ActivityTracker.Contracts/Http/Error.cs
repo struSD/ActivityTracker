@@ -2,6 +2,7 @@ namespace System.ComponentModel.DataAnnotations;
 
 public enum ErrorCode
 {
+    BadRequest = 40000,
     UserNotFound = 40401,
     InternalServerError = 50000,
     DbFailureError = 50001

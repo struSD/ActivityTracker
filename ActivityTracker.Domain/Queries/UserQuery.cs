@@ -23,7 +23,7 @@ public class UserQueryResult
     public User User { get; set; }
 }
 
-public class UserQueryHandler : IRequestHandler<UserQuery, UserQueryResult>
+internal class UserQueryHandler : IRequestHandler<UserQuery, UserQueryResult>
 {
     private readonly UserDbContext _dbContext;
 
