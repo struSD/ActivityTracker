@@ -1,18 +1,20 @@
 using System;
-using System.ComponentModel.DataAnnotations;
 
-namespace ActivityTracker.Domain.Exceptions;
+using ActivityTracker.Contracts.Http;
 
-public class ActivityTrackerException : Exception
+namespace ActivityTracker.Domain.Exceptions
 {
-    public ErrorCode ErrorCode { get; }
-    public ActivityTrackerException(ErrorCode errorCode) : this(errorCode, null)
+    public class ActivityTrackerException : Exception
     {
+        public ErrorCode ErrorCode { get; }
+        public ActivityTrackerException(ErrorCode errorCode) : this(errorCode, null)
+        {
 
-    }
+        }
 
-    public ActivityTrackerException(ErrorCode errorCode, string message) : base(message)
-    {
-        ErrorCode = errorCode;
+        public ActivityTrackerException(ErrorCode errorCode, string message) : base(message)
+        {
+            ErrorCode = errorCode;
+        }
     }
 }

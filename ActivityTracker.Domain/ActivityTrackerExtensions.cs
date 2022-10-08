@@ -8,14 +8,16 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace ActivityTracker.Domain;
-public static class ActivityTrackerExtensions
+namespace ActivityTracker.Domain
 {
-    public static IServiceCollection AddDomainServices(this IServiceCollection services,
-    Action<IServiceProvider, DbContextOptionsBuilder> dbOptionsAction)
+    public static class ActivityTrackerExtensions
     {
-        services.AddMediatR(typeof(CreateUserCommand));
-        services.AddDbContext<UserDbContext>(dbOptionsAction);
-        return services;
+        public static IServiceCollection AddDomainServices(this IServiceCollection services,
+        Action<IServiceProvider, DbContextOptionsBuilder> dbOptionsAction)
+        {
+            _ = services.AddMediatR(typeof(CreateUserCommand));
+            _ = services.AddDbContext<UserDbContext>(dbOptionsAction);
+            return services;
+        }
     }
 }

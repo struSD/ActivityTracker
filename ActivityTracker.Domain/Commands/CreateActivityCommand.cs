@@ -1,10 +1,8 @@
 using System;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-using ActivityTracker.Contract.Database;
+using ActivityTracker.Contracts.Http;
 using ActivityTracker.Domain.Database;
 using ActivityTracker.Domain.Exceptions;
 
@@ -12,51 +10,60 @@ using MediatR;
 
 using Microsoft.EntityFrameworkCore;
 
-namespace ActivityTracker.Domain.Commands;
+using ActivityDatabaseUser = ActivityTracker.Contracts.Database.ActivityUser;
 
-public class CreateActivityCommand : IRequest<CreateActivityCommandResult>
+namespace ActivityTracker.Domain.Commands
 {
-    public string ActivityType { get; init; }
-    public int ActivityDuration { get; init; }
-    public int UserId { get; init; }
-}
-
-public class CreateActivityCommandResult
-{
-    public ActivityUser ActivityUser { get; set; }
-}
-
-public class CreateActivityCommandHendler : IRequestHandler<CreateActivityCommand, CreateActivityCommandResult>
-{
-    private readonly UserDbContext _dbContext;
-
-    public CreateActivityCommandHendler(UserDbContext dbContext)
+    public class CreateActivityCommand : IRequest<CreateActivityCommandResult>
     {
-        _dbContext = dbContext;
+        public string ActivityType { get; init; }
+        public int ActivityDuration { get; init; }
+        public int UserId { get; init; }
     }
 
-    public async Task<CreateActivityCommandResult> Handle(CreateActivityCommand request,
-        CancellationToken cancellationToken)
+    public class CreateActivityCommandResult
     {
-        var user = await _dbContext.Users.Include(u => u.ActivityUsers).SingleOrDefaultAsync(u => u.Id == request.UserId, cancellationToken);
-        if (user == null)
+        public ActivityUser ActivityUser { get; set; }
+    }
+
+    public class CreateActivityCommandHendler : IRequestHandler<CreateActivityCommand, CreateActivityCommandResult>
+    {
+        private readonly UserDbContext _dbContext;
+
+        public CreateActivityCommandHendler(UserDbContext dbContext)
         {
-            throw new ActivityTrackerException(ErrorCode.UserNotFound, $"User {request.UserId} not found");
+            _dbContext = dbContext;
         }
 
-        var activity = new ActivityUser
+        public async Task<CreateActivityCommandResult> Handle(CreateActivityCommand request,
+            CancellationToken cancellationToken)
         {
-            ActivityType = request.ActivityType,
-            ActivityDateTime = DateTime.UtcNow,
-            ActivityDuration = request.ActivityDuration,
-            UserId = request.UserId
-        };
-        await _dbContext.ActivityUsers.AddAsync(activity, cancellationToken);
-        await _dbContext.SaveChangesAsync(cancellationToken);
+            Contracts.Database.User user = await _dbContext.Users.Include(u => u.ActivityUsers).SingleOrDefaultAsync(u => u.Id == request.UserId, cancellationToken);
+            if (user == null)
+            {
+                throw new ActivityTrackerException(ErrorCode.UserNotFound, $"User {request.UserId} not found");
+            }
 
-        return new CreateActivityCommandResult
-        {
-            ActivityUser = activity
-        };
+            ActivityDatabaseUser activity = new()
+            {
+                ActivityType = request.ActivityType,
+                ActivityDateTime = DateTime.UtcNow,
+                ActivityDuration = request.ActivityDuration,
+                UserId = request.UserId
+            };
+            _ = await _dbContext.ActivityUsers.AddAsync(activity, cancellationToken);
+            _ = await _dbContext.SaveChangesAsync(cancellationToken);
+
+            return new CreateActivityCommandResult
+            {
+                ActivityUser = new ActivityUser
+                {
+                    ActivityDateTime = activity.ActivityDateTime,
+                    ActivityDuration = activity.ActivityDuration,
+                    ActivityId = activity.ActivityId,
+                    ActivityType = activity.ActivityType,
+                }
+            };
+        }
     }
 }

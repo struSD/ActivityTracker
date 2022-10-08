@@ -1,9 +1,7 @@
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-using ActivityTracker.Contract.Database;
+using ActivityTracker.Contracts.Http;
 using ActivityTracker.Domain.Database;
 using ActivityTracker.Domain.Exceptions;
 
@@ -11,37 +9,37 @@ using MediatR;
 
 using Microsoft.EntityFrameworkCore;
 
-namespace ActivityTracker.Domain.Queries;
-
-public class UserQuery : IRequest<UserQueryResult>
+namespace ActivityTracker.Domain.Queries
 {
-    public int UserId { get; set; }
-}
-
-public class UserQueryResult
-{
-    public User User { get; set; }
-}
-
-internal class UserQueryHandler : IRequestHandler<UserQuery, UserQueryResult>
-{
-    private readonly UserDbContext _dbContext;
-
-    public UserQueryHandler(UserDbContext dbContext)
+    public class UserQuery : IRequest<UserQueryResult>
     {
-        _dbContext = dbContext;
+        public int UserId { get; set; }
     }
 
-    public async Task<UserQueryResult> Handle(UserQuery request, CancellationToken cancellationToken)
+    public class UserQueryResult
     {
-        var user = await _dbContext.Users.Include(u => u.ActivityUsers).SingleOrDefaultAsync(u => u.Id == request.UserId, cancellationToken);
-        if (user == null)
+        public Contracts.Database.User User { get; set; }
+    }
+
+    internal class UserQueryHandler : IRequestHandler<UserQuery, UserQueryResult>
+    {
+        private readonly UserDbContext _dbContext;
+
+        public UserQueryHandler(UserDbContext dbContext)
         {
-            throw new ActivityTrackerException(ErrorCode.UserNotFound, $"User{request.UserId} not found");
+            _dbContext = dbContext;
         }
-        return new UserQueryResult
+
+        public async Task<UserQueryResult> Handle(UserQuery request, CancellationToken cancellationToken)
         {
-            User = user
-        };
+            Contracts.Database.User user = await _dbContext.Users.Include(u => u.ActivityUsers).SingleOrDefaultAsync(u => u.Id == request.UserId, cancellationToken);
+
+            return user == null
+                ? throw new ActivityTrackerException(ErrorCode.UserNotFound, $"User{request.UserId} not found")
+                : new UserQueryResult
+                {
+                    User = user
+                };
+        }
     }
 }

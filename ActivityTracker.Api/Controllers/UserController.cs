@@ -1,10 +1,8 @@
-using System;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-using ActivityTracker.Contract.Http;
+using ActivityTracker.Contracts.Http;
 using ActivityTracker.Domain.Commands;
 using ActivityTracker.Domain.Queries;
 
@@ -12,72 +10,74 @@ using MediatR;
 
 using Microsoft.AspNetCore.Mvc;
 
-using Npgsql;
-
-namespace ActivityTracker.Api.Controller;
-
-[Route("api/user")]
-public class UserController : BaseController
+namespace ActivityTracker.Api.Controllers
 {
-    private readonly IMediator _mediator;
-    public UserController(IMediator mediator)
+    [Route("api/user")]
+    public class UserController : BaseController
     {
-        _mediator = mediator;
-    }
+        private readonly IMediator _mediator;
 
-    [HttpGet("{userId}")]
-    public Task<IActionResult> GetUser([FromRoute] int userId,
-            CancellationToken cancellationToken) =>
-            SafeExecute(async () =>
+        public UserController(IMediator mediator)
         {
-            var query = new UserQuery
+            _mediator = mediator;
+        }
+
+        [HttpGet("{userId}")]
+        public Task<IActionResult> GetUser([FromRoute] int userId,
+                CancellationToken cancellationToken)
+        {
+            return SafeExecute(async () =>
             {
-                UserId = userId
-            };
-            var result = await _mediator.Send(query, cancellationToken);
-            var responce = new UserResponce
-            {
-                User = new Contract.Http.User
+                UserQuery query = new()
                 {
-                    Id = result.User.Id,
-                    Name = result.User.Name,
-                    ActivityUser = result.User.ActivityUsers.Select(a => new ActivityUser
+                    UserId = userId
+                };
+                UserQueryResult result = await _mediator.Send(query, cancellationToken);
+                UserResponce responce = new()
+                {
+                    User = new User
                     {
-                        ActivityId = a.ActivityId,
-                        ActivityType = a.ActivityType,
-                        ActivityDateTime = a.ActivityDateTime,
-                        ActivityDuration = a.ActivityDuration
-                    }).ToList()
-                }
-            };
-            return Ok(responce);
-        }, cancellationToken);
+                        Id = result.User.Id,
+                        Name = result.User.Name,
+                        ActivityUser = result.User.ActivityUsers.Select(a => new ActivityUser
+                        {
+                            ActivityId = a.ActivityId,
+                            ActivityType = a.ActivityType,
+                            ActivityDateTime = a.ActivityDateTime,
+                            ActivityDuration = a.ActivityDuration
+                        }).ToList()
+                    }
+                };
+                return Ok(responce);
+            });
+        }
 
-    [HttpPut]
-    public Task<IActionResult> CreateUser([FromBody] CreateUserRequest request,
-            CancellationToken cancellationToken)
-    {
-        return SafeExecute(async () =>
+        [HttpPut]
+        public Task<IActionResult> CreateUser([FromBody] CreateUserRequest request,
+                CancellationToken cancellationToken)
         {
-            if (!ModelState.IsValid)
+            return SafeExecute(async () =>
             {
-                return ToActionResult(new ErrorResponse
+                if (!ModelState.IsValid)
                 {
-                    Code = ErrorCode.BadRequest,
-                    Message = "invalid request"
-                });
-            }
+                    return ToActionResult(new ErrorResponse
+                    {
+                        Code = ErrorCode.BadRequest,
+                        Message = "invalid request"
+                    });
+                }
 
-            var command = new CreateUserCommand
-            {
-                Name = request.Name
-            };
-            var result = await _mediator.Send(command, cancellationToken);
-            var responce = new CreateUserResponce
-            {
-                Id = result.UserId
-            };
-            return Created("http://todo.com", responce);
-        }, cancellationToken);
+                CreateUserCommand command = new()
+                {
+                    Name = request.Name
+                };
+                CreateUserCommandResult result = await _mediator.Send(command, cancellationToken);
+                CreateUserResponce responce = new()
+                {
+                    Id = result.UserId
+                };
+                return Created("http://todo.com", responce);
+            });
+        }
     }
 }

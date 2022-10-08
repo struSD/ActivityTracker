@@ -4,20 +4,21 @@ using ActivityTracker.Domain.Database;
 
 using Microsoft.EntityFrameworkCore;
 
-namespace ActivityTracker.UnitTests.Helpers;
-
-public static class DbContextHelper
+namespace ActivityTracker.UnitTests.Helpers
 {
-    public static UserDbContext CreateTestDb()
+    public static class DbContextHelper
     {
-        var tempFile = Path.GetTempFileName();
+        public static UserDbContext CreateTestDb()
+        {
+            string tempFile = Path.GetTempFileName();
 
-        var options = new DbContextOptionsBuilder<UserDbContext>()
-            .UseSqlite($"Data Source={tempFile};")
-            .Options;
+            DbContextOptions<UserDbContext> options = new DbContextOptionsBuilder<UserDbContext>()
+                .UseSqlite($"Data Source={tempFile};")
+                .Options;
 
-       var  dbContext = new UserDbContext(options);
-        dbContext.Database.Migrate();
-        return dbContext;
+            UserDbContext dbContext = new(options);
+            dbContext.Database.Migrate();
+            return dbContext;
+        }
     }
 }

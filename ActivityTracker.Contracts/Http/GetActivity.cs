@@ -1,6 +1,7 @@
-namespace ActivityTracker.Contract.Http;
-
-public class ActivityResponce
+namespace ActivityTracker.Contracts.Http
 {
-    public ActivityUser ActivityUser { get; init; }
+    public class ActivityResponce
+    {
+        public ActivityUser ActivityUser { get; init; }
+    }
 }

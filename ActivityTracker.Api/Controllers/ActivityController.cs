@@ -1,8 +1,7 @@
-using System.ComponentModel.DataAnnotations;
 using System.Threading;
 using System.Threading.Tasks;
 
-using ActivityTracker.Contract.Http;
+using ActivityTracker.Contracts.Http;
 using ActivityTracker.Domain.Commands;
 using ActivityTracker.Domain.Queries;
 
@@ -10,56 +9,58 @@ using MediatR;
 
 using Microsoft.AspNetCore.Mvc;
 
-namespace ActivityTracker.Api.Controller;
-
-[Route("api/activity")]
-public class ActivityController : BaseController
+namespace ActivityTracker.Api.Controllers
 {
-    private readonly IMediator _mediator;
-
-    public ActivityController(IMediator mediator)
+    [Route("api/activity")]
+    public class ActivityController : BaseController
     {
-        _mediator = mediator;
-    }
-    [HttpGet("allActivity")]
-    public async Task<IActionResult> GetAllAllActivity()
-    {
-        var result = await _mediator.Send(new AllActivityQuery());
-        return Ok(result);
-    }
+        private readonly IMediator _mediator;
 
-    [HttpGet("activityByName")]
-    public async Task<IActionResult> GetById(string name)
-    {
-        var product = await _mediator.Send(new GetProductByIdQuery(name));
-        return Ok(product);
-    }
+        public ActivityController(IMediator mediator)
+        {
+            _mediator = mediator;
+        }
 
-    [HttpPut]
-    public Task<IActionResult> CreateActivity([FromBody] CreateActivityRequest request,
-                CancellationToken cancellationToken)
-    {
+        [HttpGet("allActivity")]
+        public async Task<IActionResult> GetAllAllActivity()
+        {
+            AllActivityQueryResult result = await _mediator.Send(new AllActivityQuery());
+            return Ok(result);
+        }
 
-        return SafeExecute(async () =>
+        [HttpGet("activityByName")]
+        public async Task<IActionResult> GetById(string name)
+        {
+            GetProductByIdResult product = await _mediator.Send(new GetProductByIdQuery(name));
+            return Ok(product);
+        }
+
+        [HttpPut]
+        public Task<IActionResult> CreateActivity([FromBody] CreateActivityRequest request,
+                    CancellationToken cancellationToken)
         {
 
-            if (!ModelState.IsValid)
+            return SafeExecute(async () =>
             {
-                return ToActionResult(new ErrorResponse
-                {
-                    Code = ErrorCode.BadRequest,
-                    Message = "invalid request"
-                });
-            }
 
-            var command = new CreateActivityCommand
-            {
-                ActivityType = request.ActivityType,
-                ActivityDuration = request.ActivityDuration,
-                UserId = request.UserId
-            };
-            var result = await _mediator.Send(command, cancellationToken);
-            return Created("http://{todo123.com}", result);
-        }, cancellationToken);
+                if (!ModelState.IsValid)
+                {
+                    return ToActionResult(new ErrorResponse
+                    {
+                        Code = ErrorCode.BadRequest,
+                        Message = "invalid request"
+                    });
+                }
+
+                CreateActivityCommand command = new()
+                {
+                    ActivityType = request.ActivityType,
+                    ActivityDuration = request.ActivityDuration,
+                    UserId = request.UserId
+                };
+                CreateActivityCommandResult result = await _mediator.Send(command, cancellationToken);
+                return Created("http://{todo123.com}", result);
+            });
+        }
     }
 }

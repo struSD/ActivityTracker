@@ -1,55 +1,56 @@
 using System;
-using System.ComponentModel.DataAnnotations;
-using System.Threading;
 using System.Threading.Tasks;
 
+using ActivityTracker.Contracts.Http;
 using ActivityTracker.Domain.Exceptions;
 
 using Microsoft.AspNetCore.Mvc;
 
 using Npgsql;
 
-namespace ActivityTracker.Api.Controller;
-
-public class BaseController : ControllerBase
+namespace ActivityTracker.Api.Controllers
 {
-    protected async Task<IActionResult> SafeExecute(Func<Task<IActionResult>> action, CancellationToken cancellationToken)
+    public class BaseController : ControllerBase
     {
-        try
+        protected async Task<IActionResult> SafeExecute(Func<Task<IActionResult>> action)
         {
-            return await action();
-        }
-        catch (ActivityTrackerException ate)
-        {
-            var responce = new ErrorResponse
+            try
             {
-                Code = ate.ErrorCode,
-                Message = ate.Message
-            };
-            return ToActionResult(responce);
-        }
-        catch (InvalidOperationException ioe) when (ioe.InnerException is NpgsqlException)
-        {
-            var responce = new ErrorResponse
+                return await action();
+            }
+            catch (ActivityTrackerException ate)
             {
-                Code = ErrorCode.DbFailureError,
-                Message = "DB fail"
-            };
-            return ToActionResult(responce);
-        }
-        catch (Exception)
-        {
-            var responce = new ErrorResponse
+                ErrorResponse responce = new()
+                {
+                    Code = ate.ErrorCode,
+                    Message = ate.Message
+                };
+                return ToActionResult(responce);
+            }
+            catch (InvalidOperationException ioe) when (ioe.InnerException is NpgsqlException)
             {
-                Code = ErrorCode.InternalServerError,
-                Message = "Unhandled error"
-            };
-            return ToActionResult(responce);
+                ErrorResponse responce = new()
+                {
+                    Code = ErrorCode.DbFailureError,
+                    Message = "DB fail"
+                };
+                return ToActionResult(responce);
+            }
+            catch (Exception)
+            {
+                ErrorResponse responce = new()
+                {
+                    Code = ErrorCode.InternalServerError,
+                    Message = "Unhandled error"
+                };
+                return ToActionResult(responce);
+            }
+
         }
 
-    }
-    protected IActionResult ToActionResult(ErrorResponse errorResponse)
-    {
-        return StatusCode((int)errorResponse.Code / 100, errorResponse);
+        protected IActionResult ToActionResult(ErrorResponse errorResponse)
+        {
+            return StatusCode((int)errorResponse.Code / 100, errorResponse);
+        }
     }
 }

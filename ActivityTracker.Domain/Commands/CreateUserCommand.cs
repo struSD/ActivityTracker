@@ -1,42 +1,44 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-using ActivityTracker.Contract.Database;
+using ActivityTracker.Contracts.Database;
 using ActivityTracker.Domain.Database;
 
 using MediatR;
 
-namespace ActivityTracker.Domain.Commands;
-
-public class CreateUserCommand : IRequest<CreateUserCommandResult>
+namespace ActivityTracker.Domain.Commands
 {
-    public string Name { get; set; }
-}
-
-public class CreateUserCommandResult
-{
-    public int UserId { get; set; }
-}
-internal class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, CreateUserCommandResult>
-{
-    private readonly UserDbContext _dbContext;
-
-    public CreateUserCommandHandler(UserDbContext dbContext)
+    public class CreateUserCommand : IRequest<CreateUserCommandResult>
     {
-        _dbContext = dbContext;
+        public string Name { get; set; }
     }
 
-    public async Task<CreateUserCommandResult> Handle(CreateUserCommand request, CancellationToken cancellationToken)
+    public class CreateUserCommandResult
     {
-        var user = new User
+        public int UserId { get; set; }
+    }
+
+    internal class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, CreateUserCommandResult>
+    {
+        private readonly UserDbContext _dbContext;
+
+        public CreateUserCommandHandler(UserDbContext dbContext)
         {
-            Name = request.Name
-        };
-        await _dbContext.AddAsync(user, cancellationToken);
-        await _dbContext.SaveChangesAsync(cancellationToken);
-        return new CreateUserCommandResult
+            _dbContext = dbContext;
+        }
+
+        public async Task<CreateUserCommandResult> Handle(CreateUserCommand request, CancellationToken cancellationToken)
         {
-            UserId = user.Id
-        };
+            User user = new()
+            {
+                Name = request.Name
+            };
+            _ = await _dbContext.AddAsync(user, cancellationToken);
+            _ = await _dbContext.SaveChangesAsync(cancellationToken);
+            return new CreateUserCommandResult
+            {
+                UserId = user.Id
+            };
+        }
     }
 }

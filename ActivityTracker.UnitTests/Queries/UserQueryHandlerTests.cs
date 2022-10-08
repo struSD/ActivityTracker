@@ -1,10 +1,9 @@
 
 using System;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-using ActivityTracker.Contract.Database;
+using ActivityTracker.Contracts.Database;
 using ActivityTracker.Domain.Database;
 using ActivityTracker.Domain.Queries;
 using ActivityTracker.UnitTests.Helpers;
@@ -13,28 +12,29 @@ using MediatR;
 
 using Shouldly;
 
-namespace ActivityTracker.UnitTests.Queries;
-
-public class UserQueryHandlerTests
+namespace ActivityTracker.UnitTests.Queries
 {
-    private readonly UserDbContext _dbContext;
-    private readonly IRequestHandler<UserQuery, UserQueryResult> _handler;
+    public class UserQueryHandlerTests
+    {
+        private readonly UserDbContext _dbContext;
+        private readonly IRequestHandler<UserQuery, UserQueryResult> _handler;
 
-    public UserQueryHandlerTests()
-    {
-        _dbContext = DbContextHelper.CreateTestDb();
-        _handler = new UserQueryHandler(_dbContext);
-    }
-    [Fact]
-    public async Task HandlerShouldReturnUser()
-    {
-        
-        //Arrenge
-        var user = new User
+        public UserQueryHandlerTests()
         {
-            Name = Guid.NewGuid().ToString(),
-            ActivityUsers = new[]
+            _dbContext = DbContextHelper.CreateTestDb();
+            _handler = new UserQueryHandler(_dbContext);
+        }
+
+        [Fact]
+        public async Task HandlerShouldReturnUser()
+        {
+
+            //Arrenge
+            User user = new()
             {
+                Name = Guid.NewGuid().ToString(),
+                ActivityUsers = new[]
+                {
                 new ActivityUser
                 {
                     ActivityType = "golf",
@@ -48,24 +48,23 @@ public class UserQueryHandlerTests
                     ActivityDuration = new Random().Next(1000, 2500)
                 }
             }
-        };
+            };
 
-        await _dbContext.AddAsync(user);
-        await _dbContext.SaveChangesAsync();
-        var query = new UserQuery
-        {
-            UserId = user.Id
-        };
-        //Act
-        var result = await _handler.Handle(query, CancellationToken.None);
+            _ = await _dbContext.AddAsync(user);
+            _ = await _dbContext.SaveChangesAsync();
+            UserQuery query = new()
+            {
+                UserId = user.Id
+            };
+            //Act
+            UserQueryResult result = await _handler.Handle(query, CancellationToken.None);
 
-        //Assert
-        result.ShouldNotBeNull();
-        result.User.ShouldNotBeNull();
-        result.User.Id.ShouldBe(user.Id);
-        result.User.Name.ShouldBe(user.Name);
-        result.User.ActivityUsers.ShouldNotBeEmpty();
+            //Assert
+            _ = result.ShouldNotBeNull();
+            _ = result.User.ShouldNotBeNull();
+            result.User.Id.ShouldBe(user.Id);
+            result.User.Name.ShouldBe(user.Name);
+            result.User.ActivityUsers.ShouldNotBeEmpty();
+        }
     }
-
 }
-

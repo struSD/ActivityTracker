@@ -1,6 +1,5 @@
 
 using System;
-using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -10,41 +9,42 @@ using ActivityTracker.UnitTests.Helpers;
 
 using MediatR;
 
-using Microsoft.EntityFrameworkCore;
-
 using Shouldly;
 
-namespace ActivityTracker.UnitTests.Commands;
-
-public class CreateUserCommandHandlerTests : IDisposable
+namespace ActivityTracker.UnitTests.Commands
 {
-    private readonly UserDbContext _dbContext;
-    public readonly IRequestHandler<CreateUserCommand, CreateUserCommandResult> _handler;
-    public CreateUserCommandHandlerTests()
+    public class CreateUserCommandHandlerTests : IDisposable
     {
-        _dbContext = DbContextHelper.CreateTestDb();
-        _handler = new CreateUserCommandHandler(_dbContext);
-    }
+        private readonly UserDbContext _dbContext;
+        public readonly IRequestHandler<CreateUserCommand, CreateUserCommandResult> Handler;
 
-    [Fact]
-    public async Task HandleShouldCreateEmptyUser()
-    {
-        // Arrange
-        var userName = Guid.NewGuid().ToString();
-        var command = new CreateUserCommand
+        public CreateUserCommandHandlerTests()
         {
-            Name = userName
-        };
-        // Act
-        var result = await _handler.Handle(command, CancellationToken.None);
-        // Assert
-        result.ShouldNotBeNull();
-        result.UserId.ShouldBeGreaterThan(0);
-    }
+            _dbContext = DbContextHelper.CreateTestDb();
+            Handler = new CreateUserCommandHandler(_dbContext);
+        }
 
-    public void Dispose()
-    {
-        _dbContext.Database.EnsureDeleted();
-        _dbContext.Dispose();
+        [Fact]
+        public async Task HandleShouldCreateEmptyUser()
+        {
+            // Arrange
+            string userName = Guid.NewGuid().ToString();
+            CreateUserCommand command = new()
+            {
+                Name = userName
+            };
+            // Act
+            CreateUserCommandResult result = await Handler.Handle(command, CancellationToken.None);
+            // Assert
+            _ = result.ShouldNotBeNull();
+            result.UserId.ShouldBeGreaterThan(0);
+        }
+
+        public void Dispose()
+        {
+            _ = _dbContext.Database.EnsureDeleted();
+            _dbContext.Dispose();
+            GC.SuppressFinalize(this);
+        }
     }
 }

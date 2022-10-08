@@ -1,5 +1,7 @@
 ﻿using System;
+
 using Microsoft.EntityFrameworkCore.Migrations;
+
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
@@ -10,10 +12,10 @@ namespace ActivityTracker.Domain.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.EnsureSchema(
+            _ = migrationBuilder.EnsureSchema(
                 name: "public");
 
-            migrationBuilder.CreateTable(
+            _ = migrationBuilder.CreateTable(
                 name: "tbl_user",
                 schema: "public",
                 columns: table => new
@@ -22,12 +24,9 @@ namespace ActivityTracker.Domain.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     name = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false)
                 },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_tbl_user", x => x.id);
-                });
+                constraints: table => _ = table.PrimaryKey("PK_tbl_user", x => x.id));
 
-            migrationBuilder.CreateTable(
+            _ = migrationBuilder.CreateTable(
                 name: "tbl_activity",
                 schema: "public",
                 columns: table => new
@@ -41,8 +40,8 @@ namespace ActivityTracker.Domain.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_tbl_activity", x => x.activity_id);
-                    table.ForeignKey(
+                    _ = table.PrimaryKey("PK_tbl_activity", x => x.activity_id);
+                    _ = table.ForeignKey(
                         name: "FK_tbl_activity_tbl_user_user_id",
                         column: x => x.user_id,
                         principalSchema: "public",
@@ -51,7 +50,7 @@ namespace ActivityTracker.Domain.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.CreateIndex(
+            _ = migrationBuilder.CreateIndex(
                 name: "IX_tbl_activity_user_id",
                 schema: "public",
                 table: "tbl_activity",
@@ -60,11 +59,11 @@ namespace ActivityTracker.Domain.Migrations
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(
+            _ = migrationBuilder.DropTable(
                 name: "tbl_activity",
                 schema: "public");
 
-            migrationBuilder.DropTable(
+            _ = migrationBuilder.DropTable(
                 name: "tbl_user",
                 schema: "public");
         }
