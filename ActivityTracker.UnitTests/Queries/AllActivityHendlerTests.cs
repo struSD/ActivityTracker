@@ -66,8 +66,8 @@ public class UserQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        // result.ShouldNotBeNull();
-        // result.AllActivityTypes.ShouldNotBeNull();
+        result.ShouldNotBeNull();
+        result.AllActivityTypes.ShouldNotBeNull();
 
     }
 
