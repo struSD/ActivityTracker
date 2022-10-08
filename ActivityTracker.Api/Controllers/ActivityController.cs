@@ -22,11 +22,19 @@ public class ActivityController : BaseController
         _mediator = mediator;
     }
     [HttpGet("allActivity")]
-    public async Task<IActionResult> GetAllBookings()
+    public async Task<IActionResult> GetAllAllActivity()
     {
         var result = await _mediator.Send(new AllActivityQuery());
         return Ok(result);
     }
+
+    [HttpGet("activityByName")]
+    public async Task<IActionResult> GetById(string name)
+    {
+        var product = await _mediator.Send(new GetProductByIdQuery(name));
+        return Ok(product);
+    }
+
     [HttpPut]
     public Task<IActionResult> CreateActivity([FromBody] CreateActivityRequest request,
                 CancellationToken cancellationToken)
@@ -48,15 +56,10 @@ public class ActivityController : BaseController
             {
                 ActivityType = request.ActivityType,
                 ActivityDuration = request.ActivityDuration,
-                //ActivityDateTime = request.ActivityDateTime,
                 UserId = request.UserId
             };
             var result = await _mediator.Send(command, cancellationToken);
-            var responce = new CreateActivityCommand
-            {
-                UserId = result.ActivityUser.UserId
-            };
-            return Created("http://{todo123.com}", responce);
+            return Created("http://{todo123.com}", result);
         }, cancellationToken);
     }
 }

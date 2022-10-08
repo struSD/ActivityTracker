@@ -17,7 +17,6 @@ namespace ActivityTracker.Domain.Commands;
 public class CreateActivityCommand : IRequest<CreateActivityCommandResult>
 {
     public string ActivityType { get; init; }
-    public DateTime ActivityDateTime { get; set; }
     public int ActivityDuration { get; init; }
     public int UserId { get; init; }
 }
@@ -48,7 +47,7 @@ public class CreateActivityCommandHendler : IRequestHandler<CreateActivityComman
         var activity = new ActivityUser
         {
             ActivityType = request.ActivityType,
-            //ActivityDateTime = DateTime.Now,
+            ActivityDateTime = DateTime.UtcNow,
             ActivityDuration = request.ActivityDuration,
             UserId = request.UserId
         };

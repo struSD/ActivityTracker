@@ -9,7 +9,6 @@ namespace ActivityTracker.Contract.Http;
 public class CreateActivityRequest
 {
     public string ActivityType { get; set; }
-    //public DateTime ActivityDateTime { get; set; }
     public int ActivityDuration { get; set; }
     public int UserId { get; set; }
 }
