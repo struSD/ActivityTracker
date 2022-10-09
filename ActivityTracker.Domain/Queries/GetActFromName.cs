@@ -43,6 +43,7 @@ namespace ActivityTracker.Domain.Queries
                 {
                     ActivityDateTime = x.ActivityDateTime,
                     ActivityDuration = x.ActivityDuration,
+                    ActivityId = x.ActivityId,
                     ActivityType = x.ActivityType
                 }).ToArray()
             };
