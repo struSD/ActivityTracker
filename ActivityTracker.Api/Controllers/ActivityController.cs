@@ -59,7 +59,7 @@ namespace ActivityTracker.Api.Controllers
                     UserId = request.UserId
                 };
                 CreateActivityCommandResult result = await _mediator.Send(command, cancellationToken);
-                return Created("http://{todo123.com}", result);
+                return Created("http://todo123.com", result);
             });
         }
     }
